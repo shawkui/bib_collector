@@ -27,3 +27,9 @@
    * After some running, the program may be interrupted by Google. Run the following line to continue to collect from line xxx
    >> python collect.py xxx
 
+6. Demo:
+    ![Alt text](demo/demo.gif)
+
+
+* Other recommend resources
+    * Rebiber: A tool for normalizing bibtex with official info: https://github.com/yuchenlin/rebiber
