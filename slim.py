@@ -60,7 +60,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
     '''
 
     # Fields to keep
-    fields_to_keep = ['title', 'author', 'booktitle', 'journal',
+    fields_to_keep = ['title', 'author', 'booktitle', 'journal', 'publisher',
                       'volume', 'pages',  'number', 'organization', 'year']
 
     with open(input_file, 'r') as file:
