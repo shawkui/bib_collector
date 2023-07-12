@@ -49,14 +49,15 @@ import re
 from conference_abbreviation import conference_abbrev
 
 
-def slim_bib_file(input_file, output_file, conf_slim=True, verbose=True):
+def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbose=True,):
     '''
     A function to slim down the BibTeX file to ignore some unnecessary details.
 
     input_file: the path to the input BibTeX file
     output_file: the path to the output BibTeX file
     conf_slim: whether to slim down the conference name
-
+    auto_fix: whether to automatically fix the conference name in journal field
+    verbose: whether to print the details
     '''
 
     # Fields to keep
@@ -129,7 +130,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True, verbose=True):
         # # IMPORTANT: some papers use journal instead of booktitle for conference papers, which is not standard and may have some problems for generating reference.
         # # To generate correct reference, journal field begin with @article, booktitle filed begin with @inproceedings.
         # # The below code will detect the conference in Journal format and fix it.
-        if conf_slim and 'journal' in entry_dict.keys():
+        if auto_fix and conf_slim and 'journal' in entry_dict.keys():
             original_booktitle = entry_dict['journal']
             year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
             success = False
