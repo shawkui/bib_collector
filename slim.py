@@ -76,8 +76,8 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
         entry_dict = {'begin': lines[0], 'end': '}'}
 
         multiline_field = False
-        for line in lines:
-            line = line.strip()
+        for current_line in lines:
+            line = current_line.strip()
 
             if multiline_field:
                 # only when the field is multiline and field name is in fields_to_keep, keep the line
@@ -95,8 +95,8 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
                             # normal case
                             multiline_field = False
                             entry_dict[key] = line
-                        elif line.endswith('}') and key == 'year':
-                            # special case: year field, which is not multiline but ends with '}' since it is the last field
+                        elif line.endswith('}') and current_line is lines[-2]:
+                            # special case: the last field of the entry which does not end with a comma
                             multiline_field = False
                             entry_dict[key] = line
                         else:
