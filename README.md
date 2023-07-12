@@ -1,5 +1,5 @@
 ## Bib Collector
-#### A simple python program to collect BibTeX info from Google Scholar.
+#### A simple python program to collect BibTeX info from Google Scholar and slim the bib files.
 
 1. Install selenium
 >> pip install selenium==4.9.1 
@@ -30,6 +30,42 @@
 6. Demo:
     ![Alt text](demo/demo.gif)
 
+
+7. Further Improvements:
+    * You can also slim your bib files such as removing unnecessary fields, formatting the conference abbreviation by running the script **slim.py** .
+    Example:
+    * Before slim: 
+        ```
+        @inproceedings{dong2020adversarial,
+        author = {Yinpeng Dong and
+        Zhijie Deng and
+        Tianyu Pang and
+        Jun Zhu and
+        Hang Su},
+        bibsource = {dblp computer science bibliography, https://dblp.org},
+        biburl = {https://dblp.org/rec/conf/nips/DongDP0020.bib},
+        booktitle = {Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020, NeurIPS 2020, December
+        6-12, 2020, virtual},
+        editor = {Hugo Larochelle and
+        Marc'Aurelio Ranzato and
+        Raia Hadsell and
+        Maria{-}Florina Balcan and
+        Hsuan{-}Tien Lin},
+        timestamp = {Tue, 19 Jan 2021 00:00:00 +0100},
+        title = {Adversarial Distributional Training for Robust Deep Learning},
+        url = {https://proceedings.neurips.cc/paper/2020/hash/5de8a36008b04a6167761fa19b61aa6c-Abstract.html},
+        year = {2020}
+        }
+        ```
+    * After slim:
+        ```
+        @inproceedings{dong2020adversarial,
+        title = {Adversarial Distributional Training for Robust Deep Learning},
+        author = {Yinpeng Dong and Zhijie Deng and Tianyu Pang and Jun Zhu and Hang Su},
+        booktitle = {NeurIPS 2020},
+        year = {2020}
+        }
+        ```
 
 * Other recommend resources
     * Rebiber: A tool for normalizing bibtex with official info: https://github.com/yuchenlin/rebiber
