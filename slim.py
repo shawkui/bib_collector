@@ -49,7 +49,7 @@ import re
 from conference_abbreviation import conference_abbrev
 
 
-def slim_bib_file(input_file, output_file, conf_slim=True):
+def slim_bib_file(input_file, output_file, conf_slim=True, verbose=True):
     '''
     A function to slim down the BibTeX file to ignore some unnecessary details.
 
@@ -116,33 +116,43 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
                 # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
                 if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
                     if success:
-                        print(f'Match multiple conference name !!!')
+                        print(f'Warning: Match multiple conference name !!!')
+                        print(f'Warning: original_booktitle: {original_booktitle}, current conference: {conf}')
                     entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
+                    if verbose:
+                        print(f'√ {original_booktitle} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
                     success = True
             if not success:
                 print(
-                    f"Failed to find the conference name for {original_booktitle}.")
+                    f"× Failed to find the conference name for {original_booktitle}.")
         
         # # IMPORTANT: some papers use journal instead of booktitle for conference papers, which is not standard and may have some problems for generating reference.
         # # To generate correct reference, journal field begin with @article, booktitle filed begin with @inproceedings.
         # # The below code will detect the conference in Journal format and fix it.
-        # if conf_slim and 'journal' in entry_dict.keys():
-        #     original_booktitle = entry_dict['journal']
-        #     year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
-        #     success = False
-        #     for conf in conference_abbrev.keys():
-        #         # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
-        #         if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
-        #             entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
-        #             if '@article' in  entry_dict['begin']:
-        #                 entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
-        #             print(f'{entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
+        if conf_slim and 'journal' in entry_dict.keys():
+            original_booktitle = entry_dict['journal']
+            year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
+            success = False
+            for conf in conference_abbrev.keys():
+                # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
+                if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
+                    print('>>> Detect conference name in journal field. <<<')
+                    if success:
+                        print(f'Warning: Match multiple conference name !!!')
+                        print(f'Warning: original_booktitle: {original_booktitle}, current conference: {conf}')
 
-        #             # remove journal
-        #             entry_dict.pop('journal', None)
-        #             success = True
-        #             break
+                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
+                    print(f'>>> {entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
 
+                    if '@article' in  entry_dict['begin']:
+                        entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
+                        print(f'>>> @article => @inproceedings')
+
+                    success = True
+                    print('>>> Fix conference name in journal field. <<<')
+
+            if success:
+                del entry_dict['journal']
 
         # Construct the slimmed-down entry
         slim_entry = [entry_dict['begin']]
