@@ -107,6 +107,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
                         multiline_field = False
                         
         # format the conference name
+        # for booktitle, replace the original booktitle with the abbreviation
         if conf_slim and 'booktitle' in entry_dict.keys():
             original_booktitle = entry_dict['booktitle']
             year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
@@ -114,19 +115,49 @@ def slim_bib_file(input_file, output_file, conf_slim=True):
             for conf in conference_abbrev.keys():
                 # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
                 if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
+                    if success:
+                        print(f'Match multiple conference name !!!')
                     entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
                     success = True
-                    break
-
             if not success:
                 print(
                     f"Failed to find the conference name for {original_booktitle}.")
+        
+        # # IMPORTANT: some papers use journal instead of booktitle for conference papers, which is not standard and may have some problems for generating reference.
+        # # To generate correct reference, journal field begin with @article, booktitle filed begin with @inproceedings.
+        # # The below code will detect the conference in Journal format and fix it.
+        # if conf_slim and 'journal' in entry_dict.keys():
+        #     original_booktitle = entry_dict['journal']
+        #     year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
+        #     success = False
+        #     for conf in conference_abbrev.keys():
+        #         # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
+        #         if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
+        #             entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
+        #             if '@article' in  entry_dict['begin']:
+        #                 entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
+        #             print(f'{entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
+
+        #             # remove journal
+        #             entry_dict.pop('journal', None)
+        #             success = True
+        #             break
+
 
         # Construct the slimmed-down entry
         slim_entry = [entry_dict['begin']]
         for key in fields_to_keep:
             if key in entry_dict:
+                if entry_dict[key].endswith('}') and key != fields_to_keep[-1]:
+                    # Add comma to fields before last line
+                    entry_dict[key]+=','
+
+                if entry_dict[key].endswith('},') and key == fields_to_keep[-1]:
+                    # remove comma in the last line
+                    entry_dict[key] = entry_dict[key][:-1]
+
                 slim_entry.append(entry_dict[key])
+
         slim_entry.append(entry_dict['end'])
 
         slim_entries.append('\n'.join(slim_entry))
