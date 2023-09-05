@@ -17,6 +17,7 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
     scholars = open(input_file)
     file_out = open(output_file,'a+')
     file_bib_out = open(output_bib_file, 'a+')
+    file_url_download = open('url_download.txt','a+')
     scholars = scholars.readlines()
     browser = webdriver.Chrome()
     url = "https://scholar.google.com"
@@ -34,14 +35,25 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
         time.sleep(random.uniform(0.5,1.5))
 
         browser.find_element(by=By.XPATH, value = '//*[@name="q"]').send_keys(tt)
+        for tt in scholars[begin_index:]:
+        tt = tt.strip().split('\t')
+        print(tt[0])
+        tt = tt[-1]
+        browser.get(url)
+        time.sleep(random.uniform(0.5,1.5))
+        print('begin')
+        browser.find_element(by=By.XPATH, value = '//*[@name="q"]').send_keys(tt)
         try:
             browser.find_element(by=By.XPATH,value = '//*[@name="btnG"]').click()
 
+            download_link = browser.find_element(by=By.XPATH,value = '//*[@data-clk]').get_attribute('href')
             browser.find_element(by=By.XPATH,value = '//*[@class="gs_or_cit gs_or_btn gs_nph"]').click()
             time.sleep(random.uniform(0.5,1.5))
     
             link = browser.find_element(by=By.XPATH,value = '//*[@class="gs_citi"]').get_attribute('href')
+            
             print(link)
+            print(download_link)
             if link not in links:
                 links.append(link)
                 file_out.write(link+'\n')
@@ -50,6 +62,7 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
             text = browser.find_element(by=By.XPATH,value = '/html/body/pre')  
             text = text.text + '\n'
             file_bib_out.writelines(text)
+            file_url_download.write(f"{tt},{download_link}\n")
             bibs.append(text)
         except:
             print('[*****************************]')
