@@ -45,7 +45,15 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
         browser.find_element(by=By.XPATH, value = '//*[@name="q"]').send_keys(tt)
         try:
             browser.find_element(by=By.XPATH,value = '//*[@name="btnG"]').click()
-
+            # get citation number of format 'Cited by 1234'. Only the number is kept and only the first result is considered.
+            if "学术搜索" in browser.title:
+                citation_str = browser.find_element(by=By.XPATH,value = '//*[contains(text(),"被引用次数")]')
+            else:
+                citation_str = browser.find_element(by=By.XPATH,value = '//*[contains(text(),"Cited by")]')
+            print(citation_str.text)
+            # fetch the number of citations
+            citation_number = int(re.findall(r'\d+', citation_str.text)[0])
+            
             download_link = browser.find_element(by=By.XPATH,value = '//*[@data-clk]').get_attribute('href')
             browser.find_element(by=By.XPATH,value = '//*[@class="gs_or_cit gs_or_btn gs_nph"]').click()
             time.sleep(random.uniform(0.5,1.5))
@@ -62,7 +70,7 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
             text = browser.find_element(by=By.XPATH,value = '/html/body/pre')  
             text = text.text + '\n'
             file_bib_out.writelines(text)
-            file_url_download.write(f"{tt},{download_link}\n")
+            file_url_download.write(f"{tt},{download_link},{citation_number}\n")
             bibs.append(text)
         except:
             print('[*****************************]')
