@@ -6,7 +6,7 @@
 2. Install Chrome/Chromium and Chrome driver
     * Install Chrome or Chromium
     * Check your Chrome/Chromium version, e.g., enter ”chrome://version/“ in the address line
-    * Install the corresponding driver from http://chromedriver.storage.googleapis.com/index.html to your_customized_driver_path
+    * Install the corresponding driver from http://chromedriver.storage.googleapis.com/index.html to your_customized_driver_path. Refer to https://chromedriver.chromium.org/ for more info about the installation of Chrome Driver.
 
 3. Modify settings in collect.py:
 
