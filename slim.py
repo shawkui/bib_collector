@@ -118,10 +118,13 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
                 if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
                     if success:
                         print(f'Warning: Match multiple conference name !!!')
-                        print(f'Warning: original_booktitle: {original_booktitle}, current conference: {conf}')
-                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
+                        print(f'Warning: original_booktitle: {original_booktitle} current matched conference: {conf}')
+                    # entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
+                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]}}},"
+                    
                     if verbose:
-                        print(f'√ {original_booktitle} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
+                        # print(f'√ {original_booktitle} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
+                        print(f'√ {original_booktitle} => matched conference: {conf} =>  booktitle = {{{conference_abbrev[conf]}}},')
                     success = True
             if not success:
                 print(

@@ -1,9 +1,12 @@
 raw_abbrev = {
     'Advances in Neural Information Processing Systems': 'NeurIPS', 
+    'Annual Computer Security Applications Conference': 'ACSAC',
     'Association for the Advancement of Artificial Intelligence': 'AAAI', 
     'Asian Conference on Machine Learning': 'ACML',
+    'Conference on Computer and Communications Security': 'CCS',
     'Conference on Computer Vision and Pattern Recognition': 'CVPR',
     'Conference on Empirical Methods in Natural Language Processing': 'EMNLP',
+    'Conference on Neural Information Processing Systems': 'NeurIPS',
     'Conference on Neural Information Processing Systems Datasets and Benchmarks Track': 'NeurIPS Datasets and Benchmarks Track',
     'European Conference on Computer Vision': 'ECCV', 
     'European Signal Processing Conference': 'EUSIPCO',
@@ -29,7 +32,10 @@ raw_abbrev = {
     'Pattern Recognition and Computer Vision': 'PRCV',
     'Robotics: Science and Systems': 'RSS', 
     'Research in Attacks, Intrusions, and Defenses': 'RAID',
+    'Symposium on Security and Privacy': 'S\&P',
+    'Security and Privacy Workshops': 'SPW',
     'Uncertainty in Artificial Intelligence': 'UAI',
+    'USENIX Security Symposium': 'USENIX Security',
 }    
 
 # sort conference_abbrev by keys to ensure the order is consistent.
