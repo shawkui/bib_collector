@@ -165,30 +165,39 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
         # # IMPORTANT: some papers use journal instead of booktitle for conference papers, which is not standard and may have some problems for generating reference.
         # # To generate correct reference, journal field begin with @article, booktitle filed begin with @inproceedings.
         # # The below code will detect the conference in Journal format and fix it.
-        if auto_fix and conf_slim and 'journal' in entry_dict.keys():
-            original_booktitle = entry_dict['journal']
-            year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
-            success = False
-            for conf in conference_abbrev.keys():
-                # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
-                if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
-                    print('>>> Detect conference name in journal field. <<<')
-                    if success:
-                        print(f'- Warning: Match multiple conference name !!!')
-                        print(f'- Warning: original_booktitle: {original_booktitle} current conference: {conf}')
+        if auto_fix and conf_slim:
+            # Case 1: journal field is in the entry but it is conference paper
+            if 'journal' in entry_dict.keys():
+                original_booktitle = entry_dict['journal']
+                year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
+                success = False
+                for conf in conference_abbrev.keys():
+                    # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
+                    if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
+                        print('>>> Detect conference name in journal field. <<<')
+                        if success:
+                            print(f'- Warning: Match multiple conference name !!!')
+                            print(f'- Warning: original_booktitle: {original_booktitle} current conference: {conf}')
 
-                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]}}},"
-                    print(f'>>> {entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]}}},')
+                        entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]}}},"
+                        print(f'>>> {entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]}}},')
 
-                    if '@article' in  entry_dict['begin']:
-                        entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
-                        print(f'>>> @article => @inproceedings')
+                        if '@article' in  entry_dict['begin']:
+                            entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
+                            print(f'>>> @article => @inproceedings')
 
-                    success = True
-                    print('>>> Fix conference name in journal field. <<<')
+                        success = True
+                        print('>>> Fix conference name in journal field. <<<')
 
-            if success:
-                del entry_dict['journal']
+                if success:
+                    del entry_dict['journal']
+                    
+            # Case 2: booktitle field is in the entry but it begins with @article
+            if 'booktitle' in entry_dict.keys():
+                if '@article' in  entry_dict['begin']:
+                    entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
+                    print(f'>>> Detect @article with booktitle field. Fix it.')
+                    print(f'>>> @article => @inproceedings')
 
         # Construct the slimmed-down entry
         slim_entry = [entry_dict['begin']]
