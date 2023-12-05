@@ -43,10 +43,22 @@ author = {Yinpeng Dong and Zhijie Deng and Tianyu Pang and Jun Zhu and Hang Su},
 booktitle = {NeurIPS 2020},
 year = {2020}
 }
+
+Usage:
+1. Customize the input_file and output_file in the code
+    python slim.py input_file output_file
+
+2. Use default input_file and output_file:
+    python slim.py
+
+Hint: To save the log to a file, use the following command:
+    python slim.py > log.txt
+
 '''
 
 import re
 from conference_abbreviation import conference_abbrev
+import sys
 
 
 def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbose=True,):
@@ -70,10 +82,15 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
     # Find all BibTeX entries
     entries = re.findall(r'(@.*?\{.*?\n.*?\n}|\})', bib_data, re.DOTALL)
     slim_entries = []
-    for entry in entries:
+    for entry_index_i, entry in enumerate(entries):
+        print(f'\nProcessing entry {entry_index_i+1}/{len(entries)}, entry name: {entry.split("{")[1].split(",")[0]}')
         lines = entry.strip().split('\n')
 
         # Remove unnecessary fields from each entry
+        # if lines[0] has no abbreviation of the entry (for example, @inproceedings{ , there is no abbreviation for the entry), raise error
+        if len(lines[0].strip().split('{')) == 1:
+            raise Exception(f'× Failed to find the abbreviation of the entry: {lines[0]}')
+
         entry_dict = {'begin': lines[0], 'end': '}'}
 
         multiline_field = False
@@ -117,8 +134,8 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
                 # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
                 if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
                     if success:
-                        print(f'Warning: Match multiple conference name !!!')
-                        print(f'Warning: original_booktitle: {original_booktitle} current matched conference: {conf}')
+                        print(f'- Warning: Match multiple conference name !!!')
+                        print(f'- Warning: original_booktitle: {original_booktitle} last matched conference: {entry_dict["booktitle"]}, current matched conference: {conf}')
                     # entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
                     entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]}}},"
                     
@@ -128,7 +145,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
                     success = True
             if not success:
                 print(
-                    f"× Failed to find the conference name for {original_booktitle}.")
+                    f"× Error: Failed to find the conference name for {original_booktitle}.")
         
         # # IMPORTANT: some papers use journal instead of booktitle for conference papers, which is not standard and may have some problems for generating reference.
         # # To generate correct reference, journal field begin with @article, booktitle filed begin with @inproceedings.
@@ -142,11 +159,11 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
                 if conf.lower() in original_booktitle.lower() or conference_abbrev[conf].lower() in original_booktitle.lower():
                     print('>>> Detect conference name in journal field. <<<')
                     if success:
-                        print(f'Warning: Match multiple conference name !!!')
-                        print(f'Warning: original_booktitle: {original_booktitle}, current conference: {conf}')
+                        print(f'- Warning: Match multiple conference name !!!')
+                        print(f'- Warning: original_booktitle: {original_booktitle} current conference: {conf}')
 
-                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]} {year}}},"
-                    print(f'>>> {entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]} {year}}},')
+                    entry_dict['booktitle'] = f"booktitle = {{{conference_abbrev[conf]}}},"
+                    print(f'>>> {entry_dict["journal"]} =>  booktitle = {{{conference_abbrev[conf]}}},')
 
                     if '@article' in  entry_dict['begin']:
                         entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
@@ -183,8 +200,15 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
     print(
         f"Successfully slimmed down the BibTeX file. Saved to {output_file}.")
 
+# check input arguments, if empty, use default
+if len(sys.argv) == 1:
+    input_file = 'raw_bib.txt'
+    output_file = 'output.bib'
+elif len(sys.argv) == 2:
+    input_file = sys.argv[1]
+    output_file = 'output.bib'
+else:
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
 
-# Usage example
-input_file = 'raw_bib.txt'
-output_file = 'output.bib'
 slim_bib_file(input_file, output_file)
