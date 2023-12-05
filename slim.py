@@ -100,7 +100,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
     
     # check the number of @ and the number of entries:
     if bib_data.count('@') != len(entries):
-        raise Exception(f'× Error: The number of @ is not equal to the number of entries. Please check the input file: {input_file}. Some entries may be missing.')
+        raise Exception(f'× Error: The number of @ is not equal to the number of detected entries. Some entries may be missing. Please check the input file: {input_file}. You can aslo comment out this line to ignore this error.')
     
     for entry_index_i, entry in enumerate(entries):
         print(f'\nProcessing entry {entry_index_i+1}/{len(entries)}, entry name: {entry.split("{")[1].split(",")[0]}')
