@@ -196,8 +196,15 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
             if 'booktitle' in entry_dict.keys():
                 if '@article' in  entry_dict['begin']:
                     entry_dict['begin'] = entry_dict['begin'].replace('@article', '@inproceedings') 
-                    print(f'>>> Detect @article with booktitle field. Fix it.')
+                    print(f'>>> Detect booktitle in @article. Fix it.')
                     print(f'>>> @article => @inproceedings')
+
+            # Case 3: journal field is in the entry but it begins with @inproceedings
+            if 'journal' in entry_dict.keys():
+                if '@inproceedings' in  entry_dict['begin']:
+                    entry_dict['begin'] = entry_dict['begin'].replace('@inproceedings', '@article') 
+                    print(f'>>> Detect journal in @inproceedings. Fix it.')
+                    print(f'>>> @inproceedings => @article')
 
         # Construct the slimmed-down entry
         slim_entry = [entry_dict['begin']]
