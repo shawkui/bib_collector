@@ -44,6 +44,11 @@ booktitle = {NeurIPS 2020},
 year = {2020}
 }
 
+Format of the BibTeX file:
+* each entry starts with @ and its abbreviation, for example, @inproceedings{abbr,
+* each entry ends with } in a new line without any other characters.
+
+
 Usage:
 1. Customize the input_file and output_file in the code
     python slim.py input_file output_file
@@ -54,6 +59,11 @@ Usage:
 Hint: To save the log to a file, use the following command:
     python slim.py > log.txt
 
+
+Caveats:
+1. The code is not robust enough. If the BibTeX file is not well-formatted, the code may fail. Please check the output file and the error message in your tex editor.
+2. The code is not well tested. If you find any bugs, please contact me or raise an issue.
+3. The code is not optimized. If you have any suggestions, please contact me or raise an issue.
 '''
 
 import re
@@ -78,7 +88,12 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
 
     with open(input_file, 'r') as file:
         bib_data = file.read()
-
+        
+    # replace \n any space } any space \n to \n}\n
+    bib_data = re.sub(r'\n\s*\}\s*\n', '\n}\n', bib_data)
+    # replace any }}\n to }\n}\n
+    bib_data = re.sub(r'\}\}\n', '}\n}\n', bib_data)
+    
     # Find all BibTeX entries
     entries = re.findall(r'(@.*?\{.*?\n.*?\n}|\})', bib_data, re.DOTALL)
     slim_entries = []
@@ -88,8 +103,8 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
 
         # Remove unnecessary fields from each entry
         # if lines[0] has no abbreviation of the entry (for example, @inproceedings{ , there is no abbreviation for the entry), raise error
-        if len(lines[0].strip().split('{')) == 1:
-            raise Exception(f'× Failed to find the abbreviation of the entry: {lines[0]}')
+        if lines[0].strip().split('{')[1] == '':
+            raise Exception(f'× Failed to find the abbreviation of the entry: {lines[0]} for \n{entry}')
 
         entry_dict = {'begin': lines[0], 'end': '}'}
 
@@ -198,7 +213,7 @@ def slim_bib_file(input_file, output_file, conf_slim=True, auto_fix=True, verbos
         file.write('\n\n'.join(slim_entries))
 
     print(
-        f"Successfully slimmed down the BibTeX file. Saved to {output_file}.")
+        f"\nSuccessfully slimmed down the BibTeX file. Saved to {output_file}.")
 
 # check input arguments, if empty, use default
 if len(sys.argv) == 1:
@@ -212,3 +227,5 @@ else:
     output_file = sys.argv[2]
 
 slim_bib_file(input_file, output_file)
+# Show caveats
+print('\n>>> The Code is not robust enough. If the BibTeX file is not well-formatted, the code may fail. Please check the output file and the error message in your tex editor.')
