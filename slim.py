@@ -112,40 +112,44 @@ def slim_bib_file(input_file, output_file, auto_fix=True, verbose=True, do_abbre
     
     for entry_index_i, entry in enumerate(entries):
         abbrev_type = None
+        vennue = None
         # get the infor for booktitle = {xxx} or journal = {xxx} or booktitle={xxx} or journal={xxx}
         if 'booktitle' in entry:
             vennue = re.findall(r'booktitle\s*=\s*\{(.*)', entry)[0]
         if 'journal' in entry:
             vennue = re.findall(r'journal\s*=\s*\{(.*)', entry)[0]
 
-        # Check if the entry is a conference paper or a journal paper by checking if conf_name or conf_abbrev is in the entry and if jpur_name or jour_abbrev is in the entry
-        if any(conf_name_i.lower() in vennue.lower() for conf_name_i in conf_name) or any(conf_abbrev_i.lower() in vennue.lower() for conf_abbrev_i in conf_abbrev):
-            abbrev_type = 'conference'
-            fields_to_keep = fields_to_keep_conf 
-            abbrev_dict = conference_abbrev
-            do_abbrev = do_abbrev_conf
-               
-        if any(jpur_name_i.lower() in vennue.lower() for jpur_name_i in jpur_name) or any(jour_abbrev_i.lower() in vennue.lower() for jour_abbrev_i in jour_abbrev):
-            if abbrev_type == 'conference':
-                # print all matched conference name and journal name
-                print(f'Vennue: {vennue}')
-                for conf_name_i in conf_name:
-                    if conf_name_i.lower() in vennue.lower():
-                        print(f'- Warning: {conf_name_i} is matched in the vennue')
-                for conf_abbrev_i in conf_abbrev:
-                    if conf_abbrev_i.lower() in vennue.lower():
-                        print(f'- Warning: {conf_abbrev_i} is matched in the vennue')
-                for jpur_name_i in jpur_name:
-                    if jpur_name_i.lower() in vennue.lower():
-                        print(f'- Warning: {jpur_name_i} is matched in the vennue')
-                for jour_abbrev_i in jour_abbrev:
-                    if jour_abbrev_i.lower() in vennue.lower():
-                        print(f'- Warning: {jour_abbrev_i} is matched in the vennue')
-                raise Exception(f'× Error: The entry is both a conference paper and a journal paper. Please check the input file: {input_file}. You can aslo comment out this line to ignore this error.')
-            abbrev_type = 'journal'
-            fields_to_keep = fileds_to_keep_journal
-            abbrev_dict = journal_abbrev
-            do_abbrev = do_abbrev_journal
+        if vennue is None:
+            print(f'× Error: Failed to find the booktitle or journal for {entry}.')
+        else:
+            # Check if the entry is a conference paper or a journal paper by checking if conf_name or conf_abbrev is in the entry and if jpur_name or jour_abbrev is in the entry
+            if any(conf_name_i.lower() in vennue.lower() for conf_name_i in conf_name) or any(conf_abbrev_i.lower() in vennue.lower() for conf_abbrev_i in conf_abbrev):
+                abbrev_type = 'conference'
+                fields_to_keep = fields_to_keep_conf 
+                abbrev_dict = conference_abbrev
+                do_abbrev = do_abbrev_conf
+                
+            if any(jpur_name_i.lower() in vennue.lower() for jpur_name_i in jpur_name) or any(jour_abbrev_i.lower() in vennue.lower() for jour_abbrev_i in jour_abbrev):
+                if abbrev_type == 'conference':
+                    # print all matched conference name and journal name
+                    print(f'Vennue: {vennue}')
+                    for conf_name_i in conf_name:
+                        if conf_name_i.lower() in vennue.lower():
+                            print(f'- Warning: {conf_name_i} is matched in the vennue')
+                    for conf_abbrev_i in conf_abbrev:
+                        if conf_abbrev_i.lower() in vennue.lower():
+                            print(f'- Warning: {conf_abbrev_i} is matched in the vennue')
+                    for jpur_name_i in jpur_name:
+                        if jpur_name_i.lower() in vennue.lower():
+                            print(f'- Warning: {jpur_name_i} is matched in the vennue')
+                    for jour_abbrev_i in jour_abbrev:
+                        if jour_abbrev_i.lower() in vennue.lower():
+                            print(f'- Warning: {jour_abbrev_i} is matched in the vennue')
+                    raise Exception(f'× Error: The entry is both a conference paper and a journal paper. Please check the input file: {input_file}. You can aslo comment out this line to ignore this error.')
+                abbrev_type = 'journal'
+                fields_to_keep = fileds_to_keep_journal
+                abbrev_dict = journal_abbrev
+                do_abbrev = do_abbrev_journal
 
         print(f'\nProcessing entry {entry_index_i+1}/{len(entries)}, Type: {abbrev_type}, Entry name: {entry.split("{")[1].split(",")[0]}')
         
