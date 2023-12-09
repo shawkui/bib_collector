@@ -193,11 +193,10 @@ def process_one_entry(entry, fields_to_keep, abbrev_dict, do_abbrev, verbose, au
         raise Exception(f'× Failed to find the id of the entry: {lines[0]} for \n{entry}')
 
     entry_dict = {'begin': lines[0], 'end': '}'}
-
     multiline_field = False
     for current_line in lines:
         line = current_line.strip()
-
+        
         if multiline_field:
             # only when the field is multiline and field name is in fields_to_keep, keep the line
             # slim_entry.append(line)
@@ -224,7 +223,7 @@ def process_one_entry(entry, fields_to_keep, abbrev_dict, do_abbrev, verbose, au
                         new_line = line
                 else:
                     multiline_field = False
-                    
+           
     if 'booktitle' in entry_dict.keys() :
         original_booktitle = entry_dict['booktitle']
         booktitle_type = 'booktitle'
@@ -243,11 +242,11 @@ def process_one_entry(entry, fields_to_keep, abbrev_dict, do_abbrev, verbose, au
         year = re.findall(r'\{(\d+)\}', entry_dict['year'])[0]
         success = False
         for conf_or_jour in abbrev_dict.keys():
-            # check if the conference name is in the original booktitle or the abbreviation is in the original booktitle
+            # check if the venue name is in the original booktitle or the abbreviation is in the original booktitle
             if conf_or_jour.lower() in original_booktitle.lower() or abbrev_dict[conf_or_jour].lower() in original_booktitle.lower():
                 if success:
-                    print(f'- Warning: Match multiple conference name !!!')
-                    print(f'- Warning: original_booktitle: {original_booktitle} last matched conference: {entry_dict["booktitle"]}, current matched conference: {conf_or_jour}')
+                    print(f'- Warning: Match multiple venue name !!!')
+                    print(f'- Warning: original_booktitle: {original_booktitle} last matched venue: {entry_dict["booktitle"]}, current matched venue: {conf_or_jour}')
 
                 if do_abbrev:
                     entry_dict[booktitle_type] = f"{booktitle_type} = {{{abbrev_dict[conf_or_jour]}}},"
@@ -256,19 +255,19 @@ def process_one_entry(entry, fields_to_keep, abbrev_dict, do_abbrev, verbose, au
 
                 if verbose:
                     if do_abbrev:
-                        print(f'√ {original_booktitle} => matched conference: {conf_or_jour} =>  booktitle = {{{abbrev_dict[conf_or_jour]}}},')
+                        print(f'√ {original_booktitle} => matched venue: {conf_or_jour} =>  booktitle = {{{abbrev_dict[conf_or_jour]}}},')
                     else:
-                        print(f'√ {original_booktitle} => matched conference: {conf_or_jour} =>  booktitle = {{{conf_or_jour}}},')
+                        print(f'√ {original_booktitle} => matched venue: {conf_or_jour} =>  booktitle = {{{conf_or_jour}}},')
 
                 success = True
         if not success:
             print(
-                f"× Error: Failed to find the conference/journal name for {original_booktitle}.")
+                f"× Error: Failed to find the venue/journal name for {original_booktitle}.")
         
-        # # IMPORTANT: To generate correct reference, inproceedings should be used for conference paper and article should be used for journal paper.
-        # # The below code will detect the conference in Journal format and fix it.
+        # # IMPORTANT: To generate correct reference, inproceedings should be used for venue paper and article should be used for journal paper.
+        # # The below code will detect the venue in Journal format and fix it.
         if auto_fix and abbrev_type!=booktitle_type:
-            # if the entry is a conference paper
+            # if the entry is a venue paper
             if abbrev_type == 'conference':
                 # if not begin with @inproceedings, fix it
                 if entry_dict['begin'].startswith('@article'):
