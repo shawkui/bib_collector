@@ -111,6 +111,7 @@ def slim_bib_file(input_file, output_file, auto_fix=True, verbose=True, do_abbre
         raise Exception(f'× Error: The number of @ is not equal to the number of detected entries. Some entries may be missing. Please check the input file: {input_file}. You can aslo comment out this line to ignore this error.')
     
     for entry_index_i, entry in enumerate(entries):
+        print(f'\nProcessing entry {entry_index_i+1}/{len(entries)}, Entry name: {entry.split("{")[1].split(",")[0]}')
         abbrev_type = None
         vennue = None
         # get the infor for booktitle = {xxx} or journal = {xxx} or booktitle={xxx} or journal={xxx}
@@ -150,8 +151,7 @@ def slim_bib_file(input_file, output_file, auto_fix=True, verbose=True, do_abbre
                 fields_to_keep = fileds_to_keep_journal
                 abbrev_dict = journal_abbrev
                 do_abbrev = do_abbrev_journal
-
-        print(f'\nProcessing entry {entry_index_i+1}/{len(entries)}, Type: {abbrev_type}, Entry name: {entry.split("{")[1].split(",")[0]}')
+        print('Detect entry type: ', abbrev_type)
         
         if abbrev_type is None:
             # default to use conference
