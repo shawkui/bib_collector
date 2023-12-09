@@ -52,6 +52,7 @@ raw_abbrev = {
     'Uncertainty in Artificial Intelligence': 'UAI',
     'USENIX Security Symposium': 'USENIX Security',
     r'{USENIX} Security Symposium': 'USENIX Security',
+    'Annual Conference of the International Speech Communication Association': 'INTERSPEECH',
 }    
 
 # sort conference_abbrev by keys to ensure the order is consistent.
