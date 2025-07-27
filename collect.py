@@ -19,7 +19,7 @@ def extract_href(input_file, output_file, output_bib_file, chrome_driver, begin_
     file_bib_out = open(output_bib_file, 'a+')
     file_url_download = open('url_download.txt','a+')
     scholars = scholars.readlines()
-    browser = webdriver.Chrome()
+    browser = webdriver.Chrome(executable_path=chrome_driver)
     url = "https://scholar.google.com"
     browser.get(url)
     links = []
